@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Upvote interface</title>
+  <style>
+
+* {
+  margin: auto;
+  padding: 0;
+  text-align: center;
+}
+    
+.padre { 
+  border-radius: 5px;
+  border: 2px solid #FF5722;
+  width: 700px;
+  padding: 0 0 20px 0;
+  background: #676767;
+  color: burlywood;
+}
+
+h1 {
+  padding: 0 0 15px 0;
+}
+
+.form {
+  background: #FF5722;
+  border: 1px solid #5a5a5a;
+  border-radius: 5px;
+  width: 550px;
+  padding: 20px 0;
+  color: white;
+}
+
+.link {
+  width: 500px;
+}
+
+.username{
+  width: 500px;
+}
+
+.activekey {
+  width: 500px;
+}
+
+.author {
+  width: 500px;
+}
+
+.slidecontainer {
+  width: 100%;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 500px;
+  height: 15px;
+  border-radius: 5px;
+  background: white;
+  outline: none;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #0083a3;
+  cursor: pointer;
+  border: 2px solid black;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #0083a3;
+  cursor: pointer;
+  border: 2px solid black;
+}
+
+.button {
+  border: none;
+  border-radius: 3px;
+  color: white;
+  background-image: linear-gradient(to right, #1ed01e, #4db8f7);
+  padding: 10px;
+}
+
+.button:hover {
+  border: none;
+  border-radius: 3px;
+  color: white;
+  background-image: linear-gradient(to right, #9C27B0, #2196F3);
+  padding: 10px;
+}    
+  </style>
+</head>
+<body>
+  <div class="padre">
+    <h1>Upvote interface</h1>
+    <div class="form">
+      <span>Username</span><br>
+        <input id="voter" class="username" type="text" name="username" placeholder="Your Username without @" >
+      <span>Active Key</span><br>
+        <input id="wif" class="activekey" type="password" name="activekey" placeholder="5K2..." >
+      <span>Author</span><br>
+        <input id="author" class="author" type="text" name="author" placeholder="Author" > 
+      <span>Permlink</span><br>
+        <input id="permalink" class="link" type="text" name="link" placeholder="my-little-voting-robot" ><br><br>
+      <div class="slidecontainer">
+        <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+        <p>Value: <span class="demo" id="demo"></span></p>
+      </div>
+      <br>
+        <input id="" class="button" type="button" value="Submit" onClick=upvote()>     
+    </div>
+  </div>
+  <div class="result">
+    <span class="resulVote"></span>
+  </div>
+
+  <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
+
+  <script>
+    const wkd = steem;
+    wkd.api.setOptions({ url: 'wss://standby.weku.io:8190' });
+  	wkd.config.set('address_prefix', 'WKA');
+	  wkd.config.set('chain_id','b24e09256ee14bab6d58bfa3a4e47b0474a73ef4d6c47eeea007848195fa085e');
+    var slider = document.getElementById("myRange");
+    var output = document.getElementById("demo");
+
+    output.innerHTML = slider.value;
+    slider.oninput = function() {
+    output.innerHTML = this.value;
+    }
+
+    var upvote = () => {
+      var wif = document.getElementById('wif').value; 
+      var voter = document.getElementById('voter').value;
+      var author = document.getElementById('author').value;
+      var permalink = document.getElementById('permalink').value;
+      var weight = document.querySelector('.slider').value;
+      var percentage = weight * 100;
+    
+      wkd.broadcast.vote(wif, voter, author, permalink, percentage, (err, res) => {
+        if (err) {
+          var result = document.querySelector('.result');
+          result.style.borderRadius = "5px";
+          result.style.position = "relative";
+          result.style.background = "red";
+          result.style.width = "700px";
+          result.style.top = "20px";
+          var resulError = document.querySelector('.resulVote');
+          resulError.innerHTML = '<h2>This post has already been voted</h2>';
+          resulError.style.padding = "50px";
+          resulError.style.color = "white";
+        } else {
+          var result = document.querySelector('.result');
+          result.style.borderRadius = "5px";
+          result.style.position = "relative";
+          result.style.background = "green";
+          result.style.width = "700px";
+          result.style.top = "20px";
+          var resultSuccess = document.querySelector('.resulVote');
+          resultSuccess.innerHTML = '<h2>You have voted successfully</h2>';
+          resultSuccess.style.padding = "50px";
+          resultSuccess.style.color = "white";
+        }
+      });
+    }
+  </script>
+</body>
+</html>
